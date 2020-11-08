@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { Breadcrumb, BreadcrumbItem,Button, Row, Col, Label } from 'reactstrap';
-import { Control, Form, Errors, actions } from 'react-redux-form';
+import React, {Component} from 'react';
+import { Breadcrumb, BreadcrumbItem, Button,Row, Label, Col} from 'reactstrap';
 import { Link } from 'react-router-dom';
-
+import { Control, Form, Errors, actions } from 'react-redux-form';
+import { connect } from 'react-redux';
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
@@ -14,20 +14,17 @@ class Contact extends Component {
 
     constructor(props) {
         super(props);
-
-        this.handleSubmit = this.handleSubmit.bind(this);    
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
-
 
     handleSubmit(values) {
-        console.log('Current State is: ' + JSON.stringify(values));
-        alert('Current State is: ' + JSON.stringify(values));
+        console.log('Thank you for your feedback!\n' + JSON.stringify(values));
         this.props.resetFeedbackForm();
-        // event.preventDefault();
+        this.props.postFeedback(values);
+        alert('Thank you for your feedback!\n' + JSON.stringify(this.props.feedback));
     }
-
+   
     render() {
-
         return(
             <div className="container">
                 <div className="row">
@@ -66,21 +63,23 @@ class Contact extends Component {
                         </div>
                     </div>
                 </div>
-
                 <div className="row row-content">
-                   <div className="col-12">
-                      <h3>Send us your Feedback</h3>
-                   </div>
+                    <div className="col-12">
+                        <h3>Send us Your Feedback</h3>
+                    </div>
                     <div className="col-12 col-md-9">
-                    <Form model="feedback" onSubmit={(values) => this.handleSubmit(values)}>
+                        <Form model="feedback" onSubmit={(values) => this.handleSubmit(values)}>
                             <Row className="form-group">
-                            <Label htmlFor="firstname" md={2}>First Name</Label>
+                                <Label htmlFor="firstname" md={2}>First Name</Label>
                                 <Col md={10}>
-                                    <Control.text model=".firstname" id="firstname" name="firstname" placeholder="First Name" className="form-control" 
-                                       validators={{
-                                        required, minLength: minLength(3), maxLength: maxLength(15)
-                                    }}/>
-                                     <Errors
+                                    <Control.text model=".firstname" id="firstname" name="firstname"
+                                        placeholder="First Name"
+                                        className="form-control"
+                                        validators={{
+                                            required, minLength: minLength(3), maxLength: maxLength(15)
+                                        }}
+                                         />
+                                    <Errors
                                         className="text-danger"
                                         model=".firstname"
                                         show="touched"
@@ -163,9 +162,8 @@ class Contact extends Component {
                                     <div className="form-check">
                                         <Label check>
                                             <Control.checkbox model=".agree" name="agree"
-                                                className="form-check-input"
-                                                 /> {' '}
-                                                <strong>May we contact you?</strong>
+                                                className="form-check-input" />
+                                            {' '}<strong>May we contact you?</strong>
                                         </Label>
                                     </div>
                                 </Col>
@@ -194,10 +192,14 @@ class Contact extends Component {
                             </Row>
                         </Form>
                     </div>
-               </div>
+                </div>
             </div>
         );
     }
 }
 
-export default Contact;
+const mapStateToProps = state => ({
+    feedback: state.feedback
+});
+
+export default connect(mapStateToProps)(Contact);
